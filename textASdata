@@ -1,0 +1,21 @@
+
+
+library(tidyverse)
+
+#csvファイルを全て結合して読み込み
+file_list <- list.files(path = "/Users/namikisuzuka/Desktop/thesis/yomiuri", pattern = "*.csv", full.names = TRUE)
+yomiuri <- NULL
+for (i in 1:length(file_list)){
+  csv_data <- read.csv(file_list[i])
+  yomiuri <- rbind(yomiuri, csv_data)
+}
+
+#いくつに分割するかを確認
+yomiuri_check <- data.frame(yomiuri, do.call("rbind", strsplit(as.character(yomiuri$text), "\n")))
+ncol(yomiuri_check)-ncol(yomiuri)
+
+#上で確認した数まで列名を作る
+yomiuri <- separate(yomiuri, col = text, sep="\n", into = paste0("text_", 1:54), remove = FALSE)
+
+#出力
+write.csv(yomiuri, "yomiuri_split.csv", fileEncoding = "UTF-8", row.names = FALSE)
